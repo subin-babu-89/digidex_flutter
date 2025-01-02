@@ -1,0 +1,6 @@
+{
+  "appTitle": "digidex_flutter",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}
