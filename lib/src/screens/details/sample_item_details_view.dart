@@ -1,4 +1,5 @@
-import 'package:digidex_flutter/src/sample_feature/details/bloc/details_bloc.dart';
+import 'package:digidex_flutter/src/repository/digimon.dart';
+import 'package:digidex_flutter/src/screens/details/bloc/details_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,7 +21,8 @@ class SampleItemDetailsView extends StatelessWidget {
         title: const Text('Item Details'),
       ),
       body: BlocProvider(
-        create: (context) => DetailsBloc(),
+        create: (context) =>
+            DetailsBloc(digimonRepository: context.read<DigimonRepository>()),
         child: DetailsContent(id: id),
       ),
     );
@@ -54,6 +56,8 @@ class _DetailsContentState extends State<DetailsContent> {
           switch (state) {
             case DetailsInitial():
               return Text('Loading...');
+            case DetailsLoading loading:
+              return Text('Loading details for ${loading.id}');
             case DetailsLoaded loaded:
               return Text(loaded.detail);
           }

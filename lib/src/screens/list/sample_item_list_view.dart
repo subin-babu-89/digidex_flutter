@@ -1,10 +1,11 @@
-import 'package:digidex_flutter/src/sample_feature/list/bloc/list_bloc.dart';
+import 'package:digidex_flutter/src/repository/digimon.dart';
+import 'package:digidex_flutter/src/screens/list/bloc/list_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../settings/settings_view.dart';
-import '../details/sample_item_details_view.dart';
+import 'components/digimon_list_item.dart';
 
 /// Displays a list of SampleItems.
 class SampleItemListView extends StatelessWidget {
@@ -36,7 +37,9 @@ class SampleItemListView extends StatelessWidget {
       // building all Widgets up front, the ListView.builder constructor lazily
       // builds Widgets as they’re scrolled into view.
       body: BlocProvider(
-        create: (context) => ListBloc(),
+        create: (context) => ListBloc(
+          digimonRepository: context.read<DigimonRepository>(),
+        ),
         child: ListContent(),
       ),
     );
@@ -67,26 +70,22 @@ class _ListContentState extends State<ListContent> {
           ListInitial() => Center(
               child: Text("Loading..."),
             ),
-          ListLoaded loaded => ListView.builder(
+          ListLoading loading => Center(
+              child: Text('Loading page ${loading.pageNumber}'),
+            ),
+          ListLoaded loaded => ListView.separated(
               // Providing a restorationId allows the ListView to restore the
               // scroll position when a user leaves and returns to the app after it
               // has been killed while running in the background.
+              padding: EdgeInsets.all(8),
               restorationId: 'sampleItemListView',
               itemCount: loaded.items.length,
+              separatorBuilder: (context, index) => SizedBox(
+                height: 8,
+              ),
               itemBuilder: (BuildContext context, int index) {
                 final item = loaded.items[index];
-
-                return ListTile(
-                    title: Text('SampleItem ${item.id}'),
-                    leading: const CircleAvatar(
-                      // Display the Flutter Logo image asset.
-                      foregroundImage:
-                          AssetImage('assets/images/flutter_logo.png'),
-                    ),
-                    onTap: () {
-                      context.push(
-                          '/${SampleItemDetailsView.routeName}/${item.id}');
-                    });
+                return DigimonListItem(item: item, itemImage: item.image);
               },
             ),
         };

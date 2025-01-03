@@ -1,12 +1,15 @@
+import 'package:digidex_flutter/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import 'sample_feature/details/sample_item_details_view.dart';
-import 'sample_feature/list/sample_item_list_view.dart';
-import 'sample_feature/settings/settings_controller.dart';
-import 'sample_feature/settings/settings_view.dart';
+import 'repository/digimon.dart';
+import 'screens/details/sample_item_details_view.dart';
+import 'screens/list/sample_item_list_view.dart';
+import 'screens/settings/settings_controller.dart';
+import 'screens/settings/settings_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -38,25 +41,29 @@ class MyApp extends StatelessWidget {
       )
     ]);
     // Glue the SettingsController to the MaterialApp.
-    return ListenableBuilder(
-      listenable: settingsController,
-      builder: (BuildContext context, Widget? child) {
-        return MaterialApp.router(
-          restorationScopeId: 'app',
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate
-          ],
-          supportedLocales: const [Locale('en', '')],
-          onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
-          themeMode: settingsController.themeMode,
-          routerConfig: router,
-        );
-      },
+    return RepositoryProvider(
+      create: (context) => DigimonRepository(),
+      child: ListenableBuilder(
+        listenable: settingsController,
+        builder: (BuildContext context, Widget? child) {
+          return MaterialApp.router(
+            restorationScopeId: 'app',
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            supportedLocales: const [Locale('en', '')],
+            onGenerateTitle: (context) =>
+                AppLocalizations.of(context)!.appTitle,
+            theme: MaterialTheme(TextTheme()).light(),
+            darkTheme: MaterialTheme(TextTheme()).dark(),
+            themeMode: settingsController.themeMode,
+            routerConfig: router,
+          );
+        },
+      ),
     );
   }
 }
